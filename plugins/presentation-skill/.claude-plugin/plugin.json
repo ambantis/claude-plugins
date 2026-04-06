@@ -1,0 +1,13 @@
+{
+  "name": "presentation-skill",
+  "description": "Build polished slide decks using pptxgenjs. Runs an intake questionnaire, generates .pptx with proper narrative structure, and performs a visual QA loop.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Alexandros Bantis",
+    "email": "ambantis@gmail.com"
+  },
+  "homepage": "https://github.com/ambantis/claude-code-plugins",
+  "repository": "https://github.com/ambantis/claude-code-plugins",
+  "license": "MIT",
+  "keywords": ["presentation", "slides", "pptx", "deck", "pptxgenjs"]
+}

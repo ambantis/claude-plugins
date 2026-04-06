@@ -1,0 +1,13 @@
+{
+  "name": "security-review",
+  "description": "General-purpose security review agent backed by Trivy. Three modes: pre-install scan, orchestrator sub-agent, and PR security review via gh CLI.",
+  "version": "1.0.0",
+  "author": {
+    "name": "Alexandros Bantis",
+    "email": "ambantis@gmail.com"
+  },
+  "homepage": "https://github.com/ambantis/claude-code-plugins",
+  "repository": "https://github.com/ambantis/claude-code-plugins",
+  "license": "MIT",
+  "keywords": ["security", "trivy", "cve", "vulnerability", "pr-review", "gh"]
+}

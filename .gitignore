@@ -1,0 +1,6 @@
+node_modules/
+output/
+*.pptx
+*.pdf
+slide-*.jpg
+.DS_Store
