@@ -84,7 +84,7 @@ warrant extra scrutiny even if they have no known CVEs yet.
 
 ### 1e. Report
 
-Use the verdict framework from `~/.claude/skills/trivy-scan/SKILL.md` Step 5.
+Use the verdict framework from `${CLAUDE_PLUGIN_ROOT}/skills/trivy-scan/SKILL.md` Step 4.
 
 ---
 
@@ -249,6 +249,6 @@ replace a full code review.*
 ## Shared Reference
 
 - Trivy prereq check: `${CLAUDE_PLUGIN_ROOT}/scripts/check_prereqs.sh`
-- Verdict thresholds: `${CLAUDE_PLUGIN_ROOT}/skills/trivy-scan/SKILL.md` Step 5
+- Verdict thresholds: `${CLAUDE_PLUGIN_ROOT}/skills/trivy-scan/SKILL.md` Step 4
 - gh CLI docs: https://cli.github.com/manual
 - trivy-mcp: https://github.com/aquasecurity/trivy-mcp
