@@ -5,8 +5,7 @@
     "email": "ambantis@gmail.com"
   },
   "metadata": {
-    "description": "Personal Claude Code plugins — presentation building and security review",
-    "pluginRoot": "./plugins"
+    "description": "Personal Claude Code plugins — presentation building and security review"
   },
   "plugins": [
     {
