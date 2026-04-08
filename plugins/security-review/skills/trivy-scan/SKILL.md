@@ -34,14 +34,14 @@ The three prerequisites are therefore:
 3. **Client config** — Claude Desktop or Claude Code must have `trivy mcp` registered
    so it knows to launch the subprocess when needed
 
-Run `scripts/check_prereqs.sh` to determine which of these are missing.
+Run `${CLAUDE_PLUGIN_ROOT}/scripts/check_prereqs.sh` to determine which of these are missing.
 
 ---
 
 ## Step 1 — Check Prerequisites
 
 ```bash
-bash scripts/check_prereqs.sh
+bash ${CLAUDE_PLUGIN_ROOT}/scripts/check_prereqs.sh
 ```
 
 The script checks all three states and prints actionable instructions for anything
@@ -70,7 +70,7 @@ curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/inst
 trivy --version
 ```
 
-Re-run `scripts/check_prereqs.sh` after installing.
+Re-run `${CLAUDE_PLUGIN_ROOT}/scripts/check_prereqs.sh` after installing.
 
 ### State 2 — trivy-mcp plugin not installed
 
@@ -81,7 +81,7 @@ trivy plugin install mcp
 trivy plugin list   # "mcp" should appear in the list
 ```
 
-Re-run `scripts/check_prereqs.sh` after installing.
+Re-run `${CLAUDE_PLUGIN_ROOT}/scripts/check_prereqs.sh` after installing.
 
 ### State 3 — MCP server not configured (Claude won't launch it automatically)
 
@@ -119,7 +119,7 @@ claude mcp add trivy --scope user -- trivy mcp
 
 No restart needed — Claude Code picks up MCP config changes immediately.
 
-Re-run `scripts/check_prereqs.sh` after configuring to confirm.
+Re-run `${CLAUDE_PLUGIN_ROOT}/scripts/check_prereqs.sh` after configuring to confirm.
 
 ---
 

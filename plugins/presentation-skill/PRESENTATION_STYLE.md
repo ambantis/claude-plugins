@@ -96,35 +96,38 @@ Before building any deck, ask the presenter the following questions. Do not proc
 
 ### Always ask:
 
-1. **Internal or external presentation?**
+1. **Do you have a company template deck?**
+   _(If yes, ask for the file path. This will be used to derive the color palette, fonts, and layout conventions. If no, the default design system is used.)_
+
+2. **Internal or external presentation?**
    _(Determines whether About Me, legal disclaimer, and context-setting slides are needed)_
 
-2. **Who is the audience?**
+3. **Who is the audience?**
    _(Engineering peers, technical leadership, business stakeholders, conference attendees, mixed?)_
 
-3. **What is the single thesis — the one thing the audience should remember?**
+4. **What is the single thesis — the one thing the audience should remember?**
    _(If the presenter can't state this in one sentence, the deck isn't ready to be built)_
 
-4. **What is the narrative arc?**
+5. **What is the narrative arc?**
    _(Problem/solution? Before/after? Lessons learned? Product pitch? Walk through options if needed)_
 
-5. **How long is the talk?**
+6. **How long is the talk?**
    _(Sets the expected slide count and depth of each section)_
 
-6. **What are the 3–5 key ideas or moments in the talk?**
+7. **What are the 3–5 key ideas or moments in the talk?**
    _(These become the content slides; everything else is context or transition)_
 
-7. **Are there any visuals, diagrams, screenshots, or cultural references you already have in mind?**
+8. **Are there any visuals, diagrams, screenshots, or cultural references you already have in mind?**
    _(Gather these before generating slides)_
 
 ### For external presentations, also ask:
 
-8. **What does the audience need to know about your company/product before the problem makes sense?**
+9. **What does the audience need to know about your company/product before the problem makes sense?**
    _(2–3 sentences max; this becomes the context-setting section)_
 
-9. **What is your current role and relevant background for the About Me slide?**
+10. **What is your current role and relevant background for the About Me slide?**
 
-10. **Any personal detail you'd like on the About Me slide?**
+11. **Any personal detail you'd like on the About Me slide?**
     _(Optional — but humanizing touches land well with external audiences)_
 
 ---

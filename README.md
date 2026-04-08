@@ -10,8 +10,8 @@ To add this plugin repository and install individual plugins:
 
 ```bash
 /plugin marketplace add ambantis/claude-plugins
-/plugin install presentation-skill@ambantis-claude-plugins
-/plugin install security-review@ambantis-claude-plugins
+/plugin install presentation-skill@ambantis-code-plugins
+/plugin install security-review@ambantis-code-plugins
 ```
 
 After installing a plugin, follow its **Getting Started** section below to

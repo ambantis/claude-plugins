@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "presentation-skill",
-      "source": "./plugins/presentation-skill",
+      "source": "./presentation-skill",
       "description": "Build polished slide decks using pptxgenjs. Runs an intake questionnaire, generates .pptx with proper narrative structure, and performs a visual QA loop.",
       "version": "1.0.0",
       "author": { "name": "Alexandros Bantis" },
@@ -22,7 +22,7 @@
     },
     {
       "name": "security-review",
-      "source": "./plugins/security-review",
+      "source": "./security-review",
       "description": "General-purpose security review agent backed by Trivy. Pre-install scans, orchestrator sub-agent, and PR security review with gh CLI.",
       "version": "1.0.0",
       "author": { "name": "Alexandros Bantis" },

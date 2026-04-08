@@ -1,5 +1,5 @@
 ---
-name: presentation
+name: build-deck
 description: >
   Build polished slide decks (.pptx) using pptxgenjs. Use this skill whenever
   a user asks to create a presentation, deck, or slides — or when a topic and
@@ -47,13 +47,13 @@ run a Trivy scan on the lockfile:
 ```bash
 trivy fs --scanners vuln,secret \
   --severity HIGH,CRITICAL \
-  ~/.claude/skills/presentation-skill
+  ${CLAUDE_PLUGIN_ROOT}
 ```
 
-If Trivy reports HIGH or CRITICAL CVEs, consult
-`~/.claude/skills/security-review/SKILL.md` before proceeding.
+If Trivy reports HIGH or CRITICAL CVEs, invoke `/security-review:security-review`
+before proceeding.
 
-If Trivy is not yet set up, see `~/.claude/skills/trivy-scan/SKILL.md`.
+If Trivy is not yet set up, invoke `/security-review:trivy-scan`.
 
 ---
 
@@ -62,7 +62,7 @@ If Trivy is not yet set up, see `~/.claude/skills/trivy-scan/SKILL.md`.
 Dependencies are local to this project — they do not install globally.
 
 ```bash
-cd ~/.claude/skills/presentation-skill
+cd ${CLAUDE_PLUGIN_ROOT}
 
 # First time, or after package.json changes
 npm ci
@@ -84,6 +84,7 @@ npm run install-check
 Work through the intake questionnaire with the user before writing any slide
 code. Do not proceed until all required questions are answered:
 
+- Company template deck? (file path if yes)
 - Internal or external presentation?
 - Audience?
 - Single thesis (one sentence)?
@@ -93,25 +94,74 @@ code. Do not proceed until all required questions are answered:
 - Visuals already in mind?
 - (External only) About Me, legal disclaimer, context-setting content?
 
-Confirm the proposed narrative arc with the user before proceeding to Step 3.
+Confirm the proposed narrative arc with the user before proceeding.
 
 ---
 
-## Step 3 — Generate the Deck
+## Step 3 — Derive Design System from Template (if provided)
 
-### 3a. Configure `src/build_deck.js`
+If the user provided a company template deck, extract the brand's visual
+identity before generating any slides. If no template was provided, skip to
+Step 4 — the defaults in `design_system.js` will be used.
+
+### 3a. Extract text and structure
+
+```bash
+cd ${CLAUDE_PLUGIN_ROOT}
+python -m markitdown <path-to-template>.pptx
+```
+
+Note the slide titles, ordering conventions, and any recurring text patterns
+(e.g. footer text, disclaimer wording).
+
+### 3b. Convert template to images
+
+```bash
+cd ${CLAUDE_PLUGIN_ROOT}
+
+# macOS with Microsoft PowerPoint:
+osascript -e 'tell application "Microsoft PowerPoint" to save active presentation in POSIX file "/tmp/template.pdf" as save as PDF'
+# macOS/Linux with LibreOffice:
+soffice --headless --convert-to pdf --outdir /tmp <path-to-template>.pptx
+
+rm -f /tmp/template-slide-*.jpg
+pdftoppm -jpeg -r 150 /tmp/template.pdf /tmp/template-slide
+```
+
+### 3c. Inspect and extract brand elements
+
+Read every template slide image. Identify:
+
+- **Color palette** — primary, accent, background, and text colors (note hex
+  values by visual inspection)
+- **Typography** — title font, body font, and approximate sizes
+- **Layout patterns** — how title slides, chapter breaks, and content slides
+  are structured (margins, alignment, use of accent bars or shapes)
+- **Recurring elements** — logos, footer bars, decorative shapes
+
+### 3d. Update `design_system.js`
+
+Edit `PALETTE`, `FONTS`, `SIZE`, and the slide helper functions in
+`src/design_system.js` to match the template's brand. Preserve the helper
+function signatures so `build_deck.js` remains compatible.
+
+---
+
+## Step 4 — Generate the Deck
+
+### 4a. Configure `src/build_deck.js`
 
 Edit the `CONFIG` block at the top of `src/build_deck.js`:
 
 ```javascript
 const CONFIG = {
-  title:    "<thesis from intake Q3>",
+  title:    "<thesis from intake Q4>",
   author:   "Alexandros Bantis",
   fileName: "<topic-date>.pptx",   // e.g. "agentic-systems-2026-04.pptx"
 };
 ```
 
-### 3b. Design principles to follow while writing slide code
+### 4b. Design principles to follow while writing slide code
 
 These come from `PRESENTATION_STYLE.md` — they are non-negotiable:
 
@@ -128,38 +178,40 @@ These come from `PRESENTATION_STYLE.md` — they are non-negotiable:
   row. Use stat callouts, two-column, full-bleed placeholder, and diagram
   slides to maintain visual rhythm.
 
-### 3c. Build the deck
+### 4c. Build the deck
 
 ```bash
-cd ~/.claude/skills/presentation-skill
+cd ${CLAUDE_PLUGIN_ROOT}
 node src/build_deck.js
 # Output: output/<filename>.pptx
 ```
 
 ---
 
-## Step 4 — QA Loop
+## Step 5 — QA Loop
 
 **Assume there are problems. Your job is to find them.**
 
-### 4a. Content check
+### 5a. Content check
 
 ```bash
-cd ~/.claude/skills/presentation-skill
+cd ${CLAUDE_PLUGIN_ROOT}
 python -m markitdown output/<filename>.pptx
 ```
 
 Check: correct slide order, no missing titles, no leftover placeholder text,
 thesis present in title and conclusion.
 
-### 4b. Visual check — convert to images
+### 5b. Visual check — convert to images
 
 ```bash
-cd ~/.claude/skills/presentation-skill
+cd ${CLAUDE_PLUGIN_ROOT}
 
-# Requires LibreOffice and poppler (pdftoppm)
-python /mnt/skills/public/pptx/scripts/office/soffice.py \
-  --headless --convert-to pdf output/<filename>.pptx
+# Convert .pptx to PDF
+# macOS with Microsoft PowerPoint installed:
+osascript -e 'tell application "Microsoft PowerPoint" to save active presentation in POSIX file "/tmp/deck.pdf" as save as PDF'
+# macOS/Linux with LibreOffice:
+soffice --headless --convert-to pdf --outdir output output/<filename>.pptx
 
 rm -f slide-*.jpg
 pdftoppm -jpeg -r 120 output/<filename>.pdf slide
@@ -175,7 +227,7 @@ Inspect every slide image. Look for:
 - Low-contrast text or icons
 - Accent lines under titles (anti-pattern — remove immediately)
 
-### 4c. Fix and re-verify
+### 5c. Fix and re-verify
 
 After any fix:
 1. Re-run `node src/build_deck.js`
@@ -188,11 +240,11 @@ with no new issues found.
 
 ---
 
-## Step 5 — Deliver
+## Step 6 — Deliver
 
 ```bash
 # The .pptx is in output/ — present it to the user
-ls ~/.claude/skills/presentation-skill/output/
+ls ${CLAUDE_PLUGIN_ROOT}/output/
 ```
 
 If the user wants the file uploaded to Google Drive, use the `gws` CLI or the
@@ -223,5 +275,4 @@ System dependencies (not in package.json — must be installed separately):
 
 - Design principles: `PRESENTATION_STYLE.md` (this directory)
 - pptxgenjs API: https://gitbrent.github.io/PptxGenJS/
-- pptxgenjs skill docs: `/mnt/skills/public/pptx/pptxgenjs.md`
 - Canonical example deck: https://www.scylladb.com/tech-talk/scaling-up-machine-learning-experimentation-at-tubi-5x-and-beyond/

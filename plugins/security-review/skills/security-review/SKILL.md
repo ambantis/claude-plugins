@@ -21,8 +21,8 @@ for dependency/CVE scanning. PR review mode additionally analyzes the diff for
 secrets, risky patterns, and dependency changes.
 
 **Prerequisites:** Trivy + trivy-mcp must be installed and configured.
-See `~/.claude/skills/trivy-scan/SKILL.md` for setup. Run
-`~/.claude/skills/trivy-scan/scripts/check_prereqs.sh` if unsure.
+See `${CLAUDE_PLUGIN_ROOT}/skills/trivy-scan/SKILL.md` for setup. Run
+`${CLAUDE_PLUGIN_ROOT}/scripts/check_prereqs.sh` if unsure.
 
 ---
 
@@ -248,7 +248,7 @@ replace a full code review.*
 
 ## Shared Reference
 
-- Trivy prereq check: `~/.claude/skills/trivy-scan/scripts/check_prereqs.sh`
-- Verdict thresholds: `~/.claude/skills/trivy-scan/SKILL.md` Step 5
+- Trivy prereq check: `${CLAUDE_PLUGIN_ROOT}/scripts/check_prereqs.sh`
+- Verdict thresholds: `${CLAUDE_PLUGIN_ROOT}/skills/trivy-scan/SKILL.md` Step 5
 - gh CLI docs: https://cli.github.com/manual
 - trivy-mcp: https://github.com/aquasecurity/trivy-mcp
