@@ -44,7 +44,7 @@ The presentation skill requires four system dependencies:
 | Dependency | Purpose |
 |---|---|
 | Node.js ≥ 22 | Runs pptxgenjs to generate the `.pptx` file |
-| Python 3 + `markitdown` | Content QA — extracts slide text for verification |
+| [uv](https://docs.astral.sh/uv/) | Manages Python + markitdown for content QA (no system Python needed) |
 | Microsoft PowerPoint (macOS) or LibreOffice | Visual QA step 1 — converts `.pptx` to PDF |
 | Poppler (`pdftoppm`) | Visual QA step 2 — converts PDF to per-slide JPEG images |
 
@@ -55,9 +55,8 @@ The presentation skill requires four system dependencies:
 curl https://get.volta.sh | bash
 volta install node@22
 
-# Python + markitdown
-brew install python
-pip3 install "markitdown[pptx]"
+# uv (manages Python + markitdown automatically)
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Visual QA: if Microsoft PowerPoint is already installed, no action needed.
 # Otherwise, install LibreOffice:
@@ -74,9 +73,8 @@ brew install poppler
 curl https://get.volta.sh | bash
 volta install node@22
 
-# Python + markitdown
-sudo apt-get update && sudo apt-get install -y python3 python3-pip
-pip3 install "markitdown[pptx]"
+# uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # LibreOffice
 sudo apt-get install -y libreoffice
@@ -92,9 +90,8 @@ sudo apt-get install -y poppler-utils
 curl https://get.volta.sh | bash
 volta install node@22
 
-# Python + markitdown
-sudo dnf install -y python3 python3-pip
-pip3 install "markitdown[pptx]"
+# uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # LibreOffice
 sudo dnf install -y libreoffice-impress
@@ -110,9 +107,8 @@ sudo dnf install -y poppler-utils
 curl https://get.volta.sh | bash
 volta install node@22
 
-# Python + markitdown
-sudo pacman -S python python-pip
-pip3 install "markitdown[pptx]"
+# uv
+curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # LibreOffice
 sudo pacman -S libreoffice-still
@@ -123,11 +119,12 @@ sudo pacman -S poppler
 
 ##### Install plugin dependencies
 
-After system dependencies are in place, install the Node.js project dependencies:
+After system dependencies are in place, install project dependencies:
 
 ```bash
 cd ~/.claude/plugins/cache/presentation-skill
 npm ci
+uv sync
 ```
 
 ---
