@@ -11,11 +11,18 @@ All scoped to `presentation-skill/node_modules/` — never global:
 | `react` + `react-dom` | Peer deps for react-icons rendering |
 | `sharp` | Rasterizes SVG icons to PNG for embedding |
 
+## Python packages
+
+Managed by `uv` via `pyproject.toml` — no system Python required:
+
+| Package | Purpose |
+|---|---|
+| `markitdown[pptx]` | Extracts text/structure from `.pptx` files for content QA |
+
+Install with `uv sync`. Invoke with `uv run python -m markitdown`.
+
 ## System dependencies
 
-Not in package.json — must be installed separately:
-
-- `python` + `markitdown` — content QA (`pip install "markitdown[pptx]"`)
 - `LibreOffice` — PDF conversion for visual QA
 - `poppler` (`pdftoppm`) — PDF to JPEG for slide inspection
 

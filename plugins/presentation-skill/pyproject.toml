@@ -1,0 +1,8 @@
+[project]
+name = "presentation-skill"
+version = "1.0.0"
+description = "Python dependencies for the presentation skill (markitdown for PPTX content extraction)"
+requires-python = ">=3.11"
+dependencies = [
+    "markitdown[pptx]",
+]

@@ -64,8 +64,11 @@ Dependencies are local to this project — they do not install globally.
 ```bash
 cd ${CLAUDE_PLUGIN_ROOT}
 
-# First time, or after package.json changes
+# Node dependencies (first time, or after package.json changes)
 npm ci
+
+# Python dependencies (uv manages Python + venv automatically)
+uv sync
 ```
 
 Verify the install:
@@ -73,6 +76,9 @@ Verify the install:
 ```bash
 npm run install-check
 # Should print: deps ok
+
+uv run python -m markitdown --help
+# Should print markitdown usage
 ```
 
 ---
@@ -108,7 +114,7 @@ Step 4 — the defaults in `design_system.js` will be used.
 
 ```bash
 cd ${CLAUDE_PLUGIN_ROOT}
-python -m markitdown <path-to-template>.pptx
+uv run python -m markitdown <path-to-template>.pptx
 ```
 
 Note the slide titles, ordering conventions, and any recurring text patterns
@@ -196,7 +202,7 @@ node src/build_deck.js
 
 ```bash
 cd ${CLAUDE_PLUGIN_ROOT}
-python -m markitdown output/<filename>.pptx
+uv run python -m markitdown output/<filename>.pptx
 ```
 
 Check: correct slide order, no missing titles, no leftover placeholder text,
