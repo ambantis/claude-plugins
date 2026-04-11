@@ -1,0 +1,12 @@
+{
+  "name": "mlflow-tracing",
+  "description": "Set up MLflow autologging for Claude traces. Initializes a local MLflow instance, runs the autolog command, and wires the generated settings into .claude/settings.local.json.",
+  "author": {
+    "name": "Alexandros Bantis",
+    "email": "ambantis@gmail.com"
+  },
+  "homepage": "https://github.com/ambantis/claude-plugins",
+  "repository": "https://github.com/ambantis/claude-plugins",
+  "license": "MIT",
+  "keywords": ["mlflow", "tracing", "autolog", "debugging", "observability"]
+}

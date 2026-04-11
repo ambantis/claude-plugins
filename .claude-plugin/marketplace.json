@@ -5,7 +5,7 @@
     "email": "ambantis@gmail.com"
   },
   "metadata": {
-    "description": "Personal Claude Code plugins — presentation building and security review"
+    "description": "Personal Claude Code plugins — presentation building, security review, and MLflow tracing"
   },
   "plugins": [
     {
@@ -29,6 +29,17 @@
       "repository": "https://github.com/ambantis/claude-plugins",
       "license": "MIT",
       "keywords": ["security", "trivy", "cve", "vulnerability", "pr-review"]
+    },
+    {
+      "name": "mlflow-tracing",
+      "source": "./mlflow-tracing",
+      "description": "Set up MLflow autologging for Claude traces. Initializes a local MLflow instance, runs mlflow autolog claude, and wires settings into .claude/settings.local.json.",
+      "version": "1.0.0",
+      "author": { "name": "Alexandros Bantis" },
+      "homepage": "https://github.com/ambantis/claude-plugins",
+      "repository": "https://github.com/ambantis/claude-plugins",
+      "license": "MIT",
+      "keywords": ["mlflow", "tracing", "autolog", "debugging", "observability"]
     }
   ]
 }
