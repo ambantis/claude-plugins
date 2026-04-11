@@ -20,7 +20,7 @@ A general-purpose security agent with three invocation modes. All modes use Triv
 for dependency/CVE scanning. PR review mode additionally analyzes the diff for
 secrets, risky patterns, and dependency changes.
 
-**Prerequisites:** Trivy + trivy-mcp must be installed and configured.
+**Prerequisites:** Trivy must be installed.
 See `${CLAUDE_PLUGIN_ROOT}/skills/trivy-scan/SKILL.md` for setup. Run
 `${CLAUDE_PLUGIN_ROOT}/scripts/check_prereqs.sh` if unsure.
 
@@ -62,13 +62,10 @@ TARGET="${TMPDIR}/repo"
 
 ```bash
 # Full scan — vulnerabilities + exposed secrets
-trivy fs --scanners vuln,secret "${TARGET}"
+trivy fs --quiet --format json --scanners vuln,secret "${TARGET}"
 
-# For a quick install decision, filter to HIGH/CRITICAL only
-trivy fs --severity HIGH,CRITICAL --scanners vuln,secret "${TARGET}"
-
-# Save JSON report for detailed analysis
-trivy fs --format json --output trivy-report.json "${TARGET}"
+# HIGH and CRITICAL only (recommended for install-or-not decisions)
+trivy fs --quiet --format json --severity HIGH,CRITICAL --scanners vuln,secret "${TARGET}"
 ```
 
 ### 1d. Check for dependency manifest changes (if reviewing a PR)
@@ -96,8 +93,7 @@ the target directory. Return a structured result the orchestrator can act on.
 ### 2a. Run the scan
 
 ```bash
-trivy fs --format json --scanners vuln,secret "${TARGET}" \
-  --output "${TARGET}/.security-review.json"
+trivy fs --quiet --format json --scanners vuln,secret "${TARGET}"
 ```
 
 ### 2b. Parse and return structured result
@@ -164,7 +160,7 @@ gh pr diff "${PR_NUMBER}" --name-only > /tmp/pr-${PR_NUMBER}-files.txt
 gh pr checkout "${PR_NUMBER}"
 
 # Run Trivy on the checked-out repo
-trivy fs --scanners vuln,secret .
+trivy fs --quiet --format json --scanners vuln,secret .
 
 # Return to original branch when done
 git checkout -
@@ -251,4 +247,3 @@ replace a full code review.*
 - Trivy prereq check: `${CLAUDE_PLUGIN_ROOT}/scripts/check_prereqs.sh`
 - Verdict thresholds: `${CLAUDE_PLUGIN_ROOT}/skills/trivy-scan/SKILL.md` Step 4
 - gh CLI docs: https://cli.github.com/manual
-- trivy-mcp: https://github.com/aquasecurity/trivy-mcp

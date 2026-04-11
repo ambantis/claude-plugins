@@ -133,44 +133,37 @@ uv sync
 
 #### Capabilities
 
-General-purpose security review agent backed by [Trivy](https://trivy.dev)
-and the [`gh` CLI](https://cli.github.com). Three invocation modes:
+Security review plugin backed by [Trivy](https://trivy.dev) and the [`gh` CLI](https://cli.github.com).
 
-1. **Pre-install review** — scan a local directory or GitHub repo before installing a plugin or dependency
-2. **Orchestrator sub-agent** — automated security step in a coding plan, returns structured `PASS` / `WARN` / `FAIL`
-3. **PR review** — augment a pull request review with a Trivy CVE scan and diff analysis for secrets and risky patterns
+- **Pre-install marketplace review** — discovers all scripts, hooks, and installation requirements in a plugin; presents an analysis plan; dispatches parallel subagents to evaluate each
+- **Script analysis** — static analysis of a shell or Python script: pattern matching for network calls, credential access, and dangerous patterns, plus LLM reasoning about intent
+- **Sandboxed installation scan** — installs a package into an isolated `uv` virtualenv and runs Trivy against it before touching the system
+- **Orchestrator sub-agent** — automated security step in a coding plan, returns structured `PASS` / `WARN` / `FAIL`
+- **PR review** — augment a pull request review with a Trivy CVE scan and diff analysis for secrets and risky patterns
 
-**Skills:** `/security-review:security-review`, `/security-review:trivy-scan`
+**Skills:** `/security-review:evaluate-marketplace`, `/security-review:evaluate-script`, `/security-review:evaluate-installation`, `/security-review:trivy-scan`, `/security-review:security-review`
 
 #### Getting Started
 
-The security review skill requires three system dependencies:
+The security review skill requires two system dependencies:
 
 | Dependency | Purpose |
 |---|---|
-| [Trivy](https://trivy.dev) | Vulnerability and secret scanning |
-| trivy-mcp plugin | Enables Claude Code to invoke Trivy via MCP |
+| [Trivy](https://trivy.dev) | CVE and secret scanning |
 | [`gh` CLI](https://cli.github.com) | PR diff retrieval and review posting |
 
 ##### macOS
 
 ```bash
-# Trivy
-brew install trivy
-
-# gh CLI
-brew install gh
+brew install trivy gh
 gh auth login
 ```
 
 ##### Ubuntu / Debian
 
 ```bash
-# Trivy
 curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
   | sudo sh -s -- -b /usr/local/bin
-
-# gh CLI
 sudo apt-get install -y gh
 gh auth login
 ```
@@ -178,11 +171,8 @@ gh auth login
 ##### Red Hat / Fedora
 
 ```bash
-# Trivy
 curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh \
   | sudo sh -s -- -b /usr/local/bin
-
-# gh CLI
 sudo dnf install -y gh
 gh auth login
 ```
@@ -190,22 +180,8 @@ gh auth login
 ##### Arch Linux
 
 ```bash
-# Trivy
-sudo pacman -S trivy
-
-# gh CLI
-sudo pacman -S github-cli
+sudo pacman -S trivy github-cli
 gh auth login
-```
-
-##### Configure Trivy MCP (all platforms)
-
-```bash
-# Install the trivy-mcp plugin
-trivy plugin install mcp
-
-# Register with Claude Code
-claude mcp add trivy --scope user -- trivy mcp
 ```
 
 ##### Verify setup
@@ -213,8 +189,6 @@ claude mcp add trivy --scope user -- trivy mcp
 ```bash
 bash ~/.claude/plugins/cache/security-review/scripts/check_prereqs.sh
 ```
-
-The script checks all prerequisites and prints instructions for anything missing.
 
 ---
 

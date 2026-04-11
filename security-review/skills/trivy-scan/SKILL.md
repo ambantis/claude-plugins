@@ -1,22 +1,21 @@
 ---
 name: trivy-scan
 description: >
-  Security vulnerability scanning using Trivy and the official aquasecurity/trivy-mcp
-  plugin. Use this skill whenever a user wants to evaluate the security of a package,
-  plugin, directory, container image, or repository before installing or deploying it.
-  Triggers include: "scan this for vulnerabilities", "is this package safe to install?",
-  "check security of this plugin", "run trivy", "any CVEs in", "security audit",
-  "check dependencies for vulnerabilities", "before I install this". Also trigger
-  proactively when a user is about to install a new tool or plugin and security has
-  been mentioned as a concern in the conversation.
+  Security vulnerability scanning using Trivy CLI. Use this skill whenever a
+  user wants to evaluate the security of a package, plugin, directory, container
+  image, or repository before installing or deploying it. Triggers include:
+  "scan this for vulnerabilities", "is this package safe to install?", "check
+  security of this plugin", "run trivy", "any CVEs in", "security audit", "check
+  dependencies for vulnerabilities", "before I install this". Also trigger
+  proactively when a user is about to install a new tool or plugin and security
+  has been mentioned as a concern in the conversation.
 ---
 
 # Trivy Security Scan Skill
 
-Uses the official [aquasecurity/trivy-mcp](https://github.com/aquasecurity/trivy-mcp)
-plugin to scan for CVEs, misconfigurations, and exposed secrets. Trivy natively
-understands Python (`uv.lock`, `pyproject.toml`), Node.js (`package-lock.json`,
-`yarn.lock`), containers, and remote git repositories.
+Uses the Trivy CLI to scan for CVEs, misconfigurations, and exposed secrets.
+Trivy natively understands Python (`uv.lock`, `pyproject.toml`), Node.js
+(`package-lock.json`, `yarn.lock`), containers, and remote git repositories.
 
 ---
 
@@ -26,12 +25,11 @@ understands Python (`uv.lock`, `pyproject.toml`), Node.js (`package-lock.json`,
 bash ${CLAUDE_PLUGIN_ROOT}/scripts/check_prereqs.sh
 ```
 
-The script checks three prerequisites (Trivy binary, trivy-mcp plugin, Claude
-client config) and prints actionable instructions for anything missing. Do not
-proceed to scanning until the script exits with "All checks passed."
+The script checks that the Trivy binary is installed and prints actionable
+instructions if it is missing. Do not proceed to scanning until the script
+exits with "All checks passed."
 
-If prerequisites are missing, consult `references/setup.md` for detailed
-installation and configuration instructions per OS and client.
+If Trivy is missing, consult `references/setup.md` for installation instructions.
 
 ---
 
@@ -55,41 +53,29 @@ pptxgenjs). A single filesystem scan covers both automatically.
 
 ## Step 3 — Run the Scan
 
-### Via MCP (preferred — natural language, results inline in conversation)
-
-Once configured, use natural language in the chat:
-
-```
-Scan /path/to/plugin for security vulnerabilities
-Check python:3.12-slim for CVEs
-Are there any HIGH or CRITICAL vulnerabilities in /path/to/plugin?
-Scan https://github.com/org/repo for security issues
-```
-
-### Via CLI fallback (always available, even without MCP configured)
+Use `--quiet` to suppress INFO logs and `--format json` for structured output.
+For `trivy repo`, redirect stderr to suppress git clone progress bars.
 
 ```bash
 # Filesystem scan — auto-detects Python + Node manifests
-trivy fs --scanners vuln,secret /path/to/target
+trivy fs --quiet --format json --scanners vuln,secret /path/to/target
 
 # HIGH and CRITICAL only (recommended for install-or-not decisions)
-trivy fs --severity HIGH,CRITICAL --scanners vuln,secret /path/to/target
-
-# JSON output for programmatic use
-trivy fs --format json --output trivy-report.json /path/to/target
+trivy fs --quiet --format json --severity HIGH,CRITICAL --scanners vuln,secret /path/to/target
 
 # Container image
-trivy image python:3.12-slim
+trivy image --quiet --format json python:3.12-slim
 
-# Remote git repo
-trivy repo https://github.com/org/repo
+# Remote git repo (2>/dev/null suppresses git clone progress)
+trivy repo --quiet --format json --scanners vuln,secret https://github.com/org/repo 2>/dev/null
 ```
 
 ---
 
 ## Step 4 — Interpret and Report Results
 
-After the scan completes, always present results using this structure:
+After the scan completes, parse the JSON output and present results using this
+structure:
 
 **1. Overall verdict**
 
@@ -119,6 +105,4 @@ clearly to the user.
 ## Reference
 
 - Trivy docs: https://trivy.dev/docs/
-- trivy-mcp repo: https://github.com/aquasecurity/trivy-mcp
-- Claude Desktop config: https://github.com/aquasecurity/trivy-mcp/blob/main/docs/ide/claude.md
 - Supported language coverage: https://trivy.dev/docs/latest/coverage/language/

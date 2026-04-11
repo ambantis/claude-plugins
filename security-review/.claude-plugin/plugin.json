@@ -1,6 +1,6 @@
 {
   "name": "security-review",
-  "description": "General-purpose security review agent backed by Trivy. Three modes: pre-install scan, orchestrator sub-agent, and PR security review via gh CLI.",
+  "description": "Security review plugin backed by Trivy. Skills: evaluate-marketplace (full pre-install plugin review with parallel subagents), evaluate-script (static analysis of a single script), evaluate-installation (sandboxed package install + Trivy scan), trivy-scan (CVE + secret scanning), security-review (PR and orchestrator modes).",
   "author": {
     "name": "Alexandros Bantis",
     "email": "ambantis@gmail.com"
