@@ -7,6 +7,7 @@ description: >
   a local MLflow instance at ~/.claude/mlflow, runs mlflow autolog claude, and wires
   the generated settings into .claude/settings.local.json so each developer's config
   stays out of version control.
+allowed-tools: Bash(mlflow *) Bash(curl -s https://api.github.com/repos/mlflow*) Bash(mkdir -p ~/.claude/mlflow) Bash(*setup-mlflow.py*)
 ---
 
 # MLflow Setup
@@ -22,63 +23,43 @@ each developer maintains their own config and nothing is committed to the repo.
 
 ## Prerequisites
 
-Check that MLflow is installed and up to date.
-
-**Check installed version:**
+Check whether MLflow is installed and what version is current.
 
 ```bash
-which mlflow && mlflow --version
+mlflow --version
 ```
-
-If missing, guide the user through installation using
-`${CLAUDE_PLUGIN_ROOT}/skills/mlflow-setup/references/mlflow-installation.md`.
-
-**Check latest release from GitHub:**
 
 ```bash
 curl -s https://api.github.com/repos/mlflow/mlflow/releases/latest \
   | python3 -c "import json,sys; print(json.load(sys.stdin)['tag_name'])"
 ```
 
-Compare the installed version against the latest release tag (e.g., `v2.21.0`).
-If the installed version is behind, inform the user:
+**If MLflow is not found**, inform the user and ask how they would like to
+install it. Consult `${CLAUDE_PLUGIN_ROOT}/skills/mlflow-setup/references/mlflow-installation.md`
+for available options. Do not run any install command without explicit user
+permission.
 
-> MLflow `<installed>` is installed, but `<latest>` is available. Would you like
-> to update?
+**If MLflow is installed but behind the latest release**, inform the user:
 
-If the user agrees, offer the appropriate upgrade command based on how MLflow was
-installed (check `which mlflow` path for hints — uv tool installs land in
-`~/.local/share/uv/tools/`, pipx in `~/.local/pipx/`):
+> MLflow `<installed>` is installed, but `<latest>` is available. Would you
+> like to update? If so, how did you install it (pip, uv, pipx, conda)?
 
-```bash
-# pip
-pip install --upgrade mlflow
+Wait for their answer before proceeding. Do not run an upgrade command without
+explicit user permission.
 
-# uv tool
-uv tool upgrade mlflow
-
-# pipx
-pipx upgrade mlflow
-
-# conda
-conda update -c conda-forge mlflow
-```
+**If MLflow is installed and current**, continue to Step 1.
 
 ---
 
-## Step 1 — Initialize the local MLflow instance
+## Step 1 — Create the MLflow directory
 
-Skip this step if `~/.claude/mlflow/mlflow.db` already exists.
-
-Create the shared MLflow directory and initialize the database:
+Create the directory if it doesn't already exist:
 
 ```bash
-bash ${CLAUDE_PLUGIN_ROOT}/skills/mlflow-setup/scripts/init-mlflow-db.sh
+mkdir -p ~/.claude/mlflow
 ```
 
-The script creates `~/.claude/mlflow/`, starts `mlflow server`, waits for
-`Application startup complete.` in stdout, then shuts the server down. This
-creates `~/.claude/mlflow/mlflow.db`.
+The SQLite database is created automatically the first time the Stop hook runs — no server startup needed during setup.
 
 ---
 
@@ -93,54 +74,21 @@ Store the answer as `<EXPERIMENT_NAME>`.
 
 ---
 
-## Step 3 — Run mlflow autolog
-
-From the project root, run:
+## Step 3 — Configure autologging
 
 ```bash
-mlflow autolog claude \
+${CLAUDE_PLUGIN_ROOT}/skills/mlflow-setup/scripts/setup-mlflow.py \
   -u "sqlite:////${HOME}/.claude/mlflow/mlflow.db" \
   -n "<EXPERIMENT_NAME>"
 ```
 
-This writes env vars and a Stop hook into `.claude/settings.json`.
-
-Use `-d` to target a different directory if not in the project root:
-
-```bash
-mlflow autolog claude \
-  -u "sqlite:////${HOME}/.claude/mlflow/mlflow.db" \
-  -n "<EXPERIMENT_NAME>" \
-  -d /path/to/project
-```
+If not running from the project root, add `-d /path/to/project`.
 
 ---
 
-## Step 4 — Migrate settings to settings.local.json
+## Step 4 — Verify
 
-The autolog command writes to `.claude/settings.json`, but these settings are
-developer-specific and must not be committed. Run the merge script to move them:
-
-```bash
-python ${CLAUDE_PLUGIN_ROOT}/skills/mlflow-setup/scripts/merge-settings-to-local.py
-```
-
-The script:
-1. Reads `.claude/settings.json` and extracts all `MLFLOW_*` env vars and the
-   `mlflow autolog claude stop-hook` Stop hook entry
-2. Merges those into `.claude/settings.local.json` (creates it if absent, skips
-   duplicate entries if already present)
-3. Removes the MLflow-specific keys from `settings.json`
-
----
-
-## Step 5 — Verify
-
-```bash
-cat .claude/settings.local.json
-```
-
-Expected shape:
+Read `.claude/settings.local.json` and confirm it contains the expected shape:
 
 ```json
 {
@@ -164,21 +112,30 @@ Expected shape:
 }
 ```
 
-Also confirm `settings.json` no longer contains any `MLFLOW_*` keys.
+---
+
+## Step 5 — Setup mlflow.db
+
+Ask the user to run the following command, which will start an MLflow server and create the database:
+
+```bash
+mlflow server --backend-store-uri sqlite:////${HOME}/.claude/mlflow/mlflow.db
+```
 
 ---
 
-## Step 6 — Ensure settings.local.json is gitignored
+## Setup complete
+
+Setup is done. Traces will be recorded automatically at the end of each Claude
+session via the Stop hook.
+
+To view traces, tell the user to run this command from any location:
 
 ```bash
-git check-ignore -v .claude/settings.local.json
+mlflow server --backend-store-uri sqlite:////${HOME}/.claude/mlflow/mlflow.db
 ```
 
-If not ignored:
-
-```bash
-echo '.claude/settings.local.json' >> .gitignore
-```
+Then open `http://localhost:5000/#/experiments` in a browser.
 
 ---
 
@@ -194,7 +151,5 @@ echo '.claude/settings.local.json' >> .gitignore
 
 ### Scripts
 
-- **`scripts/init-mlflow-db.sh`** — Starts and stops the MLflow server to initialize
-  the SQLite database
-- **`scripts/merge-settings-to-local.py`** — Extracts MLflow settings from
-  `settings.json` and merges them into `settings.local.json`
+- **`scripts/setup-mlflow.py`** — Runs `mlflow autolog claude` in a temp
+  directory and deep-merges the result into `.claude/settings.local.json`
