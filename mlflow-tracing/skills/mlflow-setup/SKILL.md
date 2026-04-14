@@ -38,15 +38,25 @@ permission.
 
 ---
 
-## Step 1 — Create the MLflow directory
+## Step 1 — Check existing setup
 
-Create the directory if it doesn't already exist:
+Check whether `~/.claude/mlflow/mlflow.db` already exists:
+
+```bash
+ls ~/.claude/mlflow/
+```
+
+**If `mlflow.db` exists**, the MLflow instance is already initialized. Skip to
+Step 3 — all that's needed is to update `.claude/settings.local.json`.
+
+**If `mlflow.db` does not exist**, create the directory:
 
 ```bash
 mkdir -p ~/.claude/mlflow
 ```
 
-The SQLite database is created automatically the first time the Stop hook runs — no server startup needed during setup.
+The SQLite database is created automatically the first time the Stop hook runs —
+no server startup needed during setup.
 
 ---
 
@@ -55,12 +65,18 @@ The SQLite database is created automatically the first time the Stop hook runs �
 Run `git remote -v` to derive a default experiment name from the remote URL. Parse
 `org/repo` from the output (works for both HTTPS and SSH remotes).
 
+```bash
+git remote -v
+```
+
 Ask the user:
 
 > The experiment name for this repository would be `<org/repo>`. Does that work,
 > or would you like to use a different name?
 
 Store the confirmed or overridden value as `<EXPERIMENT_NAME>`.
+
+**Do not chain commands. Run each command separately — no `&&`, no `|`.**
 
 ---
 
