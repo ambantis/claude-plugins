@@ -7,7 +7,7 @@ description: >
   a local MLflow instance at ~/.claude/mlflow, runs mlflow autolog claude, and wires
   the generated settings into .claude/settings.local.json so each developer's config
   stays out of version control.
-allowed-tools: Bash(mlflow *) Bash(curl -s https://api.github.com/repos/mlflow*) Bash(mkdir -p ~/.claude/mlflow) Bash(*setup-mlflow.py*)
+allowed-tools: Bash(mlflow *) Bash(mkdir -p ~/.claude/mlflow) Bash(*setup-mlflow.py*) Bash(git remote -v)
 ---
 
 # MLflow Setup
@@ -23,15 +23,10 @@ each developer maintains their own config and nothing is committed to the repo.
 
 ## Prerequisites
 
-Check whether MLflow is installed and what version is current.
+Check whether MLflow is installed:
 
 ```bash
 mlflow --version
-```
-
-```bash
-curl -s https://api.github.com/repos/mlflow/mlflow/releases/latest \
-  | python3 -c "import json,sys; print(json.load(sys.stdin)['tag_name'])"
 ```
 
 **If MLflow is not found**, inform the user and ask how they would like to
@@ -39,15 +34,7 @@ install it. Consult `${CLAUDE_PLUGIN_ROOT}/skills/mlflow-setup/references/mlflow
 for available options. Do not run any install command without explicit user
 permission.
 
-**If MLflow is installed but behind the latest release**, inform the user:
-
-> MLflow `<installed>` is installed, but `<latest>` is available. Would you
-> like to update? If so, how did you install it (pip, uv, pipx, conda)?
-
-Wait for their answer before proceeding. Do not run an upgrade command without
-explicit user permission.
-
-**If MLflow is installed and current**, continue to Step 1.
+**If MLflow is installed**, continue to Step 1.
 
 ---
 
@@ -65,12 +52,15 @@ The SQLite database is created automatically the first time the Stop hook runs �
 
 ## Step 2 — Get the experiment name
 
+Run `git remote -v` to derive a default experiment name from the remote URL. Parse
+`org/repo` from the output (works for both HTTPS and SSH remotes).
+
 Ask the user:
 
-> What should the experiment name be for this repository? Use the format
-> `org/project` (e.g., `adRise/hyades`, `ambantis/pyleet`).
+> The experiment name for this repository would be `<org/repo>`. Does that work,
+> or would you like to use a different name?
 
-Store the answer as `<EXPERIMENT_NAME>`.
+Store the confirmed or overridden value as `<EXPERIMENT_NAME>`.
 
 ---
 
@@ -110,16 +100,6 @@ Read `.claude/settings.local.json` and confirm it contains the expected shape:
     "MLFLOW_EXPERIMENT_NAME": "<EXPERIMENT_NAME>"
   }
 }
-```
-
----
-
-## Step 5 — Setup mlflow.db
-
-Ask the user to run the following command, which will start an MLflow server and create the database:
-
-```bash
-mlflow server --backend-store-uri sqlite:////${HOME}/.claude/mlflow/mlflow.db
 ```
 
 ---
