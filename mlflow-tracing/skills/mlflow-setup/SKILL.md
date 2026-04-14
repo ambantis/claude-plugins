@@ -7,7 +7,7 @@ description: >
   a local MLflow instance at ~/.claude/mlflow, runs mlflow autolog claude, and wires
   the generated settings into .claude/settings.local.json so each developer's config
   stays out of version control.
-allowed-tools: Bash(mlflow *) Bash(mkdir -p ~/.claude/mlflow) Bash(*setup-mlflow.py*) Bash(git remote -v)
+allowed-tools: Bash(mlflow *) Read(~/.claude/mlflow/**) Write(~/.claude/mlflow) Bash(mkdir -p ~/.claude/mlflow) Bash(*setup-mlflow.py*) Bash(git remote -v)
 ---
 
 # MLflow Setup
